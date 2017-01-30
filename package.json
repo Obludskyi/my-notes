@@ -1,0 +1,13 @@
+{
+  "name": "MyNotes",
+  "version": "1.0.0",
+  "description": "SPA on React for notes.",
+  "main": "webpack.config.js",
+  "author": "Oleksii Obludskyi",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.16.0",
+    "express": "^4.14.1",
+    "mongoose": "^4.8.0"
+  }
+}
