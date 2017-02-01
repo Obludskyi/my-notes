@@ -4,6 +4,8 @@
 import Constants from '../constants/AppConstants';
 import api from '../api';
 
+
+
 const NoteActions = {
     loadNotes() {
         dispatch({
@@ -14,13 +16,13 @@ const NoteActions = {
             .then(({ data }) =>
                 dispatch({
                     type: Constants.LOAD_NOTES_SUCCESS,
-                    notes: data
+                    payload: data
                 })
             )
             .catch(err =>
                 dispatch({
                     type: Constants.LOAD_NOTES_FAIL,
-                    error: err
+                    payload: err
                 })
             );
     },
