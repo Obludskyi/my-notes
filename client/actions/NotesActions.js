@@ -4,49 +4,49 @@
 import Constants from '../constants/AppConstants';
 import api from '../api';
 
+function loadNotes() {
+    dispatch({
+        type: Constants.LOAD_NOTES_REQUEST
+    });
 
+    api.listNotes()
+        .then(({ data }) =>
+            dispatch({
+                type: Constants.LOAD_NOTES_SUCCESS,
+                payload: data
+            })
+        )
+        .catch(err =>
+            dispatch({
+                type: Constants.LOAD_NOTES_FAIL,
+                payload: err
+            })
+        );
+}
 
-const NoteActions = {
-    loadNotes() {
-        dispatch({
-            type: Constants.LOAD_NOTES_REQUEST
-        });
+function createNote(data) {
+    api.createNote(data)
+        .then(() =>
+            loadNotes()
+        )
+        .catch(err =>
+            console.error(err)
+        );
+}
 
-        api.listNotes()
-            .then(({ data }) =>
-                dispatch({
-                    type: Constants.LOAD_NOTES_SUCCESS,
-                    payload: data
-                })
-            )
-            .catch(err =>
-                dispatch({
-                    type: Constants.LOAD_NOTES_FAIL,
-                    payload: err
-                })
-            );
-    },
+export default function NoteActions() {
+    return (dispatch) => {
+        loadNotes();
 
-    createNote(note) {
-        api.createNote(note)
+        api.deleteNote(data)
             .then(() =>
-                this.loadNotes()
+                loadNotes()
             )
             .catch(err =>
                 console.error(err)
             );
-    },
 
-    deleteNote(noteId) {
-        api.deleteNote(noteId)
-            .then(() =>
-                this.loadNotes()
-            )
-            .catch(err =>
-                console.error(err)
-            );
+        createNote(data);
     }
 };
-
-export default NoteActions;
 
