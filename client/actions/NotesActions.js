@@ -3,50 +3,76 @@
  */
 import Constants from '../constants/AppConstants';
 import api from '../api';
+import { EventEmitter } from 'events';
 
-function loadNotes() {
-    dispatch({
-        type: Constants.LOAD_NOTES_REQUEST
-    });
 
-    api.listNotes()
-        .then(({ data }) =>
-            dispatch({
-                type: Constants.LOAD_NOTES_SUCCESS,
-                payload: data
-            })
-        )
-        .catch(err =>
-            dispatch({
-                type: Constants.LOAD_NOTES_FAIL,
-                payload: err
-            })
-        );
-}
+const CHANGE_EVENT = 'change';
 
-function createNote(data) {
-    api.createNote(data)
-        .then(() =>
-            loadNotes()
-        )
-        .catch(err =>
-            console.error(err)
-        );
-}
+export const TasksStore = Object.assign({}, EventEmitter.prototype, {
+    Loading() {
+        return this.props.isLoading;
+    },
 
-export default function NoteActions() {
-    return (dispatch) => {
-        loadNotes();
+    getNotes() {
+        return this.props.notes;
+    },
 
-        api.deleteNote(data)
-            .then(() =>
-                loadNotes()
-            )
-            .catch(err =>
-                console.error(err)
-            );
+    emitChange() {
+        this.emit(CHANGE_EVENT);
+    },
 
-        createNote(data);
+    addChangeListener(callback) {
+        this.on(CHANGE_EVENT, callback);
+    },
+
+    removeChangeListener(callback) {
+        this.removeListener(CHANGE_EVENT, callback);
     }
+});
+
+
+const NoteActions = {
+        loadNotes() {
+            dispatch({
+                type: Constants.LOAD_NOTES_REQUEST
+            });
+            TasksStore.emitChange();
+            api.listNotes()
+                .then(({ data }) =>
+                        dispatch({
+                            type: Constants.LOAD_NOTES_SUCCESS,
+                            payload: data
+                        }),
+                    TasksStore.emitChange()
+                )
+                .catch(err =>
+                        dispatch({
+                            type: Constants.LOAD_NOTES_FAIL,
+                            payload: err
+                        }),
+                    TasksStore.emitChange()
+                );
+        },
+        createNote(data){
+            api.createNote(data)
+                .then(() =>
+                    loadNotes()
+                )
+                .catch(err =>
+                    console.error(err)
+                );
+        },
+
+        deleteNote(data){
+            api.deleteNote(data)
+                .then(() =>
+                    loadNotes()
+                )
+                .catch(err =>
+                    console.error(err)
+                );
+        }
 };
+
+export default NoteActions;
 

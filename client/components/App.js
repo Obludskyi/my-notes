@@ -4,16 +4,35 @@
 import React from 'react';
 import NoteEditor from './NoteEditor';
 import NotesGrid from './NotesGrid';
-import NotesActions from '../actions/NotesActions';
+import NotesActions, {TasksStore} from '../actions/NotesActions';
 import './App.less';
 import {bindActionCreators} from "redux";
 import {connect} from "react-redux";
 
+function getState() {
+    return {
+        isLoading: TasksStore.Loading(),
+        notes: TasksStore.getNotes()
+    };
+}
+
 
 const App = React.createClass({
 
+    getInitialState() {
+        return getState();
+    },
+
     componentWillMount() {
-        NotesActions();
+        NotesActions.loadNotes();
+    },
+
+    componentDidMount() {
+        NotesActions.addChangeListener(this.onChange);
+    },
+
+    componentWillUnmount() {
+        NotesActions.removeChangeListener(this.onChange);
     },
 
     handleNoteDelete(note) {
@@ -21,7 +40,7 @@ const App = React.createClass({
     },
 
     handleNoteAdd(noteData) {
-        NotesActions(noteData);
+        NotesActions.createNote(noteData);
     },
 
     render(){
@@ -34,11 +53,16 @@ const App = React.createClass({
        )
    },
 
+    onChange() {
+        this.setState(getState());
+    }
+
 });
 
 function mapStateToProps(state) {
     return {
-        notes: state.notes
+        notes: state.notes,
+        isLoading: state.isLoading
     }
 }
 
