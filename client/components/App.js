@@ -1,47 +1,48 @@
 /**
  * Created by Oleksii on 31.01.2017.
  */
-import React from 'react';
+import React, {Component} from 'react'
 import NoteEditor from './NoteEditor';
 import NotesGrid from './NotesGrid';
-import NotesActions, {TasksStore} from '../actions/NotesActions';
+import * as NotesActions from '../actions/NotesActions';
 import './App.less';
 import {bindActionCreators} from "redux";
 import {connect} from "react-redux";
 
 function getState() {
     return {
-        isLoading: TasksStore.Loading(),
-        notes: TasksStore.getNotes()
+        isLoading: true,
+        notes: []
     };
 }
 
 
-const App = React.createClass({
+class App extends Component{
 
-    getInitialState() {
-        return getState();
-    },
+    constructor(props){
+        super(props);
+        this.state = getState();
+    }
 
     componentWillMount() {
         NotesActions.loadNotes();
-    },
+    }
 
     componentDidMount() {
-        NotesActions.addChangeListener(this.onChange);
-    },
+        NotesActions.TasksStore.addChangeListener(this.onChange);
+    }
 
     componentWillUnmount() {
-        NotesActions.removeChangeListener(this.onChange);
-    },
+        NotesActions.TasksStore.removeChangeListener(this.onChange);
+    }
 
     handleNoteDelete(note) {
         NotesActions.deleteNote(note.id);
-    },
+    }
 
     handleNoteAdd(noteData) {
         NotesActions.createNote(noteData);
-    },
+    }
 
     render(){
        return(
@@ -51,13 +52,13 @@ const App = React.createClass({
                <NotesGrid notes={this.props.notes} onNoteDelete={this.handleNoteDelete} />
            </div>
        )
-   },
+   }
 
     onChange() {
         this.setState(getState());
     }
 
-});
+}
 
 function mapStateToProps(state) {
     return {
