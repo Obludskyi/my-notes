@@ -2,38 +2,45 @@
  * Created by Oleksii on 31.01.2017.
  */
 import React from 'react';
+
+import ColorPicker from './ColorPicker';
+
 import './NoteEditor.less';
 
 const NoteEditor = React.createClass({
-    getInitialState(){
-      return{
-          title: '',
-          text: '',
-          color: '#FFFFFF'
-      };
+    getInitialState() {
+        return {
+            title: '',
+            text: '',
+            color: '#FFFFFF'
+        };
     },
 
-    handleTextChange(event){
-        this.setState({text: event.target.value});
+    handleTextChange(event) {
+        this.setState({ text: event.target.value });
     },
 
-    handleTitleChange(event){
-      this.setState({title:event.target.value});
+    handleTitleChange(event) {
+        this.setState({ title: event.target.value });
     },
 
-    handleNoteAdd(){
-      const newNote = {
-          title: this.state.title,
-          text: this.state.text,
-          color: this.state.color
-      };
-
-      this.props.onNoteAdd(newNote);
-      this.setState({title:'', text:'', color:'#FFFFFF'})
+    handleColorChange(color) {
+        this.setState({ color });
     },
 
-    render(){
-        return(
+    handleNoteAdd() {
+        const newNote = {
+            title: this.state.title,
+            text: this.state.text,
+            color: this.state.color
+        };
+
+        this.props.onNoteAdd(newNote);
+        this.setState({ text: '', title: '', color: '#FFFFFF' });
+    },
+
+    render() {
+        return (
             <div className='NoteEditor'>
                 <input
                     type='text'
@@ -50,6 +57,10 @@ const NoteEditor = React.createClass({
                     onChange={this.handleTextChange}
                 />
                 <div className='NoteEditor__footer'>
+                    <ColorPicker
+                        value={this.state.color}
+                        onChange={this.handleColorChange}
+                    />
                     <button
                         className='NoteEditor__button'
                         disabled={!this.state.text}
@@ -62,4 +73,5 @@ const NoteEditor = React.createClass({
         );
     }
 });
+
 export default NoteEditor;
